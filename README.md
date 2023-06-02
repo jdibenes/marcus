@@ -74,3 +74,8 @@ The server application was developed in Unity 2020.3.42f1.
 8. Click Build and Run. Unity may ask for a Build folder. You can create a new one named Build.
 
 ## References
+
+- https://github.com/microsoft/HoloLens2ForCV
+- https://github.com/dwalton76/rubiks-cube-tracker
+- https://github.com/kkoomen/qbr
+- https://github.com/shameempk/pyciede2000
