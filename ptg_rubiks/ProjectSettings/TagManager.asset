@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - contour_state_object
+  - arrow_object_1
+  - arrow_object_2
+  - arrow_object_3
+  - arrow_object_4
+  - text_object_1
+  - reticle_object
+  - tts_object
+  - scan_bar_object
+  - scan_sides_object
+  - warning_object
+  - text_slab_object
+  - arrow_object_5
+  - arrow_object_6
+  - arrow_object_7
+  - scan_links_object
+  - avatar_object
+  - solve_links_object
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - Spatial Awareness
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
