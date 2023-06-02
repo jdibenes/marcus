@@ -45,6 +45,8 @@ The first time the server runs it will ask for the necessary permissions to acce
 
 ## Using the software
 
+Install the required Python packages and then:
+
 1. Run the server application on your HoloLens.
 2. Set the host variable of the [client.py](https://github.com/jdibenes/marcus/blob/main/guide/client.py) script to your HoloLens IP address.
 3. Run [client.py](https://github.com/jdibenes/marcus/blob/main/guide/client.py).
@@ -64,7 +66,7 @@ The first time the server runs it will ask for the necessary permissions to acce
 
 The server application was developed in Unity 2020.3.42f1.
 
-1. Open the project in Unity. If the MRTK Project Configurator window pops up just close it.
+1. Open the [project](https://github.com/jdibenes/marcus/tree/main/ptg_rubiks) in Unity. If the MRTK Project Configurator window pops up just close it.
 2. Go to Build Settings (File -> Build Settings).
 3. Switch to Universal Windows Platform.
 4. Set Target Device to HoloLens.
