@@ -59,6 +59,8 @@ The first time the server runs it will ask for the necessary permissions to acce
 
 ## Building the Unity server application
 
+The server application was developed in Unity 2020.3.42f1.
+
 1. Open the project in Unity. If the MRTK Project Configurator window pops up just close it.
 2. Go to Build Settings (File -> Build Settings).
 3. Switch to Universal Windows Platform.
@@ -67,3 +69,5 @@ The first time the server runs it will ask for the necessary permissions to acce
 6. Set Build and Run on Remote Device (via Device Portal).
 7. Set Device Portal Address to your HoloLens IP address (e.g., https://192.168.1.7) and set your Device Portal Username and Password.
 8. Click Build and Run. Unity may ask for a Build folder. You can create a new one named Build.
+
+## References
