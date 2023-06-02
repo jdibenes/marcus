@@ -62,7 +62,7 @@ Install the required Python packages and then:
 - [skimage](https://scikit-image.org/docs/stable/install.html)
 - [kociemba](https://github.com/muodov/kociemba) `pip install kociemba`
 
-## Building the Unity server application
+## Build and run the Unity server application
 
 The server application was developed in Unity 2020.3.42f1.
 
