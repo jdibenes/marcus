@@ -3,6 +3,8 @@
 HoloLens 2 Rubik's cube guide.
 The guide consists of a **Python client script that runs on a desktop machine** (Tested on Windows 10 and Ubuntu 22.04) and a **Unity server application that runs on the HoloLens**.
 
+Demo: https://youtu.be/iQYMZVgmVAc
+
 ## Preparation
 
 Before using the server software configure your HoloLens as follows:
