@@ -1,2 +1,2 @@
-# marcus
+# MARCuS
 Milly Augmented Reality CUbe Solver
