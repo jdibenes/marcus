@@ -1,6 +1,4 @@
 
-from ptg_rubiks import status
-
 import multiprocessing as mp
 import numpy as np
 import struct
@@ -12,7 +10,7 @@ import hl2ss_3dcv
 
 
 #------------------------------------------------------------------------------
-# Camera (*)
+# Camera
 #------------------------------------------------------------------------------
 
 class camera:
@@ -112,8 +110,14 @@ class camera:
         self._producer.stop(hl2ss.StreamPort.PERSONAL_VIDEO)
         hl2ss.stop_subsystem_pv(self._host, hl2ss.StreamPort.PERSONAL_VIDEO)
 
+
+#------------------------------------------------------------------------------
+# IPC Command Buffer
+#------------------------------------------------------------------------------
+
+class ipc_command_buffer(hl2ss.umq_command_buffer):
     @staticmethod
-    def image_2d_to_world_3d(image_points, scale, focal_length, principal_point, pose):
+    def centers_2d_to_unity_3d(cube_centers, scale, focal_length, principal_point, pose):
         intrinsics = hl2ss.create_pv_intrinsics(focal_length, principal_point)
         extrinsics = np.eye(4, 4, dtype=np.float32)
         intrinsics, extrinsics = hl2ss_3dcv.pv_fix_calibration(intrinsics, extrinsics)
@@ -121,7 +125,7 @@ class camera:
         camera2world = hl2ss_3dcv.camera_to_rignode(extrinsics) @ hl2ss_3dcv.reference_to_world(pose)
         centers = np.zeros((9, 3), dtype=np.float32)
         for i in range(0, 9):
-            x, y = image_points[i]
+            x, y = cube_centers[i]
             centers[i, :] = hl2ss_3dcv.transform(np.array([x, y, 1], dtype=np.float32).reshape((1, 3)), image2camera)
         l = 0.0
         for i in [0, 1, 3, 4, 6, 7]:
@@ -134,16 +138,10 @@ class camera:
         centers[:, 2] = -centers[:, 2]
         return centers
 
-
-#------------------------------------------------------------------------------
-# IPC Command Buffer (*)
-#------------------------------------------------------------------------------
-
-class ipc_command_buffer(hl2ss.umq_command_buffer):
     def update(self, top_state, state, step_index, step_count, action, warn, cube_centers, scale, focal_length, principal_point, pose, progress, auto_scan, scan_colors):
-        detected, centers = 1, camera.image_2d_to_world_3d(cube_centers, scale, focal_length, principal_point, pose).tobytes() if (cube_centers is not None) else 0, b''
+        detected, centers = (1, ipc_command_buffer.centers_2d_to_unity_3d(cube_centers, scale, focal_length, principal_point, pose).tobytes()) if (cube_centers is not None) else (0, b'')
         data = bytearray()
-        data.extend(struct.pack('<BBHHHff', (top_state << 2) | state, (int(auto_scan) << 1) | detected, step_index, step_count, status.to_recommendation(action, warn), scale, progress))
+        data.extend(struct.pack('<BBHHHff', (top_state << 2) | state, (int(auto_scan) << 7) | detected, step_index, step_count, action | warn, scale, progress))
         for color in scan_colors:
             data.extend(struct.pack('<BBBB', color[0], color[1], color[2], color[3]))
         data.extend(centers)
@@ -162,18 +160,18 @@ class ipc_command_buffer(hl2ss.umq_command_buffer):
     def tts_busy(self):
         self.add(0x00000004, b'')
 
-    def acknowledge(self):
+    def acknowledge_vi(self):
         self.add(0x00000005, b'')
 
 
 #------------------------------------------------------------------------------
-# IPC Unity Message Queue (*)
+# IPC Unity Message Queue
 #------------------------------------------------------------------------------
 
 class ipc_umq:
     def __init__(self, host, drain_rate=256):
         self._drain_rate = drain_rate
-        self._ipc_umq = hl2ss.ipc_umq(host, hl2ss.IPCPort.UNITY_MESSAGE_QUEUE)
+        self._ipc_umq = hl2ss.ipc_umq(host, hl2ss.IPCPort.UNITY_MESSAGE_QUEUE)        
         self._pushes = 0
 
     def open(self):
@@ -186,41 +184,41 @@ class ipc_umq:
 
     def _drain(self):
         return self._get() if (self._pushes >= self._drain_rate) else None
-    
+
     def _push(self, icb):
         self._ipc_umq.push(icb)
         self._drain()
         self._pushes += 1
 
-    def msg_update(self, top_state, state, step_index, step_count, action, warn, scale, focal_length, principal_point, pose, cube_centers, progress, auto_scan, scan_colors):
+    def send_update(self, top_state, state, step_index, step_count, action, warn, cube_centers, scale, focal_length, principal_point, pose, progress, auto_scan, scan_colors):
         icb = ipc_command_buffer()
         icb.update(top_state, state, step_index, step_count, action, warn, cube_centers, scale, focal_length, principal_point, pose, progress, auto_scan, scan_colors)
         self._push(icb)
-        
-    def msg_configure(self, show_contours=False, arrow_color=(255, 0, 255), head_factor=1.0/5.0, thickness=0.002, font_size=0.1, text_color=(255, 255, 255)):
+
+    def send_configure(self, show_contours=False, arrow_color=(255, 0, 255), head_factor=1.0/5.0, thickness=0.002, font_size=0.1, text_color=(255, 255, 255)):
         icb = ipc_command_buffer()
         icb.configure(show_contours, arrow_color, head_factor, thickness, font_size, text_color)
         self._push(icb)
 
-    def msg_say_step(self):
+    def send_say_step(self):
         icb = ipc_command_buffer()
         icb.say_step()
         self._push(icb)
 
-    def msg_say_process(self):
+    def send_say_process(self):
         icb = ipc_command_buffer()
         icb.say_process()
         self._push(icb)
 
-    def msg_tts_busy(self):
+    def send_tts_busy(self):
         icb = ipc_command_buffer()
         icb.tts_busy()
         self._push(icb)
         return self._get()[-1] != 0
     
-    def msg_acknowledge(self):
+    def send_acknowledge_vi(self):
         icb = ipc_command_buffer()
-        icb.acknowledge()
+        icb.acknowledge_vi()
         self._push(icb)
 
     def close(self):
