@@ -1,5 +1,6 @@
 #------------------------------------------------------------------------------
-# MARCuS client.
+# MARCuS: Milly Augmented Reality Cube Solver
+# Client
 #
 # Running:
 # 1. Run the server application on the HoloLens 2.
