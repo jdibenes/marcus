@@ -1,3 +1,24 @@
+#------------------------------------------------------------------------------
+# MARCuS client.
+#
+# Running:
+# 1. Run the server application on the HoloLens 2.
+# 2. Set host (in this script) to your HoloLens IP address. You may need to set
+#    scale (in this script) if your cube is not of regular size.
+# 3. Run this script.
+#
+# Stopping:
+# 1. Press ESC to stop this script.
+# 2. Close the server application.
+#
+# Local Controls (keyboard):
+# TAB: HELLO, READY
+# SPACE: SCAN
+# 1: HELP
+# 2: overview 
+# BACKSPACE: RESET
+# 0: goodbye
+#------------------------------------------------------------------------------
 
 import cv2
 import ptg
@@ -15,7 +36,8 @@ host = '192.168.1.7'
 # Distance between cube centers in meters
 scale = 0.01905 
 
-# Guide parameters
+# Guide parameters ------------------------------------------------------------
+
 pv_focus = 200
 color_integration_length = 10
 color_threshold = 10.0

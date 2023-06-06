@@ -1,3 +1,5 @@
+# From https://github.com/shameempk/pyciede2000
+
 """
 This cie_de_2000 implementation is based on the papers: 
 1. 

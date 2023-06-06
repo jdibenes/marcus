@@ -307,6 +307,7 @@ class painter:
             frame = painter.draw_contour_link(frame, cube_centers, link_start(i), link_end(i))
         return frame
     
+    # From https://github.com/kkoomen/qbr with some modifications
     @staticmethod
     def draw_stickers(frame, stickers, offset_x, offset_y, tile_size, tile_gap):
         for row in range(3):
@@ -320,10 +321,12 @@ class painter:
                 frame = cv2.rectangle(frame, (x1 + 1, y1 + 1), (x2 - 1, y2 - 1), palette.get_ideal_color(color) if (isinstance(color, str)) else color, -1)
         return frame
 
+    # From https://github.com/kkoomen/qbr with some modifications
     @staticmethod
     def draw_preview_stickers(frame, stickers):
         return painter.draw_stickers(frame, stickers, painter.STICKER_AREA_OFFSET, painter.STICKER_AREA_OFFSET, painter.STICKER_AREA_TILE_SIZE, painter.STICKER_AREA_TILE_GAP)
 
+    # From https://github.com/kkoomen/qbr with some modifications
     @staticmethod
     def draw_2d_cube_state(frame, result_state):
         side_offset = painter.MINI_STICKER_AREA_TILE_GAP * 3
