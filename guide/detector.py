@@ -1,3 +1,6 @@
+# This is the detector from https://github.com/dwalton76/rubiks-cube-tracker
+# with some modifications
+
 """
 Given the following .png files in /tmp/
 

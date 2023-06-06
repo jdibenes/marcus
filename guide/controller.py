@@ -1,17 +1,17 @@
 
+_NAME = "marcus"
+
 _base_ready = {
     'ready',
-    'I\'m ready',
     'I am ready',
     'ready now',
-    'I\'m ready now',
     'I am ready now',
     'go',
     'go ahead',
     'proceed',
     'carry on',
     'continue',
-    'let\'s go',
+    'lets go',
     'start',
     'begin',
 }
@@ -27,11 +27,6 @@ _FORCE_SCAN = {
     'scan',
     'scan it',
     'yes',
-    'ya',
-    'yas',
-    'yup',
-    'yeah',
-    'da',
     'sure',
     'OK',
     'okay',
@@ -41,7 +36,6 @@ _FORCE_SCAN = {
     'whatever',
     'for sure',
     'for real',
-    'uh huh',
     'if you want',
     'if you wish',
     'if you must',
@@ -107,29 +101,6 @@ _TALK_STEP = {
     'what is current objective',
     'what is the current objective',
     'what should I be doing',
-    'tell me',
-    'tell me next',
-    'tell me the next step',
-    'tell me current step',
-    'tell me the current step',
-    'tell me what is the next step'
-    'tell me what do',
-    'tell me what to do',
-    'tell me what do next',
-    'tell me what do now',
-    'tell me what to do next',
-    'tell me what to do now',
-    'tell me what supposed to do',
-    'tell me what supposed to do next',
-    'tell me what supposed to do now',
-    'tell me what I\'m supposed to do',
-    'tell me what I\'m supposed to do next',
-    'tell me what I\'m supposed to do now',
-    'read',
-    'read to me',
-    'read the next step',
-    'read to me the next step',
-    'read to me the current step',
 }
 
 _TALK_PROCESS = {
@@ -172,6 +143,16 @@ _CLEAR = {
 _LAST = {
     'goodbye',
 }
+
+_FIRST = _FIRST | {f'{_NAME} {o}' for o in _FIRST}
+_START = _START | {f'{_NAME} {o}' for o in _START}
+_SCAN = _SCAN | {f'{_NAME} {o}' for o in _SCAN}
+_FORCE_SCAN = _FORCE_SCAN | {f'{_NAME} {o}' for o in _FORCE_SCAN}
+_SOLVE = _SOLVE | {f'{_NAME} {o}' for o in _SOLVE}
+_TALK_STEP = _TALK_STEP | {f'{_NAME} {o}' for o in _TALK_STEP}
+_TALK_PROCESS = _TALK_PROCESS | {f'{_NAME} {o}' for o in _TALK_PROCESS}
+_CLEAR = _CLEAR | {f'{_NAME} {o}' for o in _CLEAR}
+_LAST = _LAST | {f'{_NAME} {o}' for o in _LAST}
 
 MASTER_LIST = list(_FIRST | _START | _SCAN | _FORCE_SCAN | _SOLVE | _TALK_STEP | _TALK_PROCESS | _CLEAR | _LAST)
 
