@@ -622,7 +622,7 @@ PlayerSettings:
   metroCertificatePassword: 
   metroCertificateSubject: jcds
   metroCertificateIssuer: jcds
-  metroCertificateNotAfter: 80e6ff61ee8fda01
+  metroCertificateNotAfter: 8033703afa7ddc01
   metroApplicationDescription: PTG Rubiks
   wsaImages: {}
   metroTileShortName: rubiks_demo

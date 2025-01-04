@@ -5,6 +5,7 @@ import struct
 import cv2
 import hl2ss_imshow
 import hl2ss
+import hl2ss_lnm
 import hl2ss_mp
 import hl2ss_3dcv
 
@@ -50,22 +51,23 @@ class camera:
     def __init__(self, host, configuration_index=6, format_index=0, buffer_size=10, profile=hl2ss.VideoProfile.H265_MAIN, factor=1/100, focus=hl2ss.PV_FocusValue.Min):
         self._host = host
         self._width, self._height, self._framerate = camera.CONFIGURATIONS[configuration_index]
+        self._divisor = 1
         self._profile = profile
-        self._bitrate = hl2ss.get_video_codec_bitrate(self._width, self._height, self._framerate, factor)
+        self._bitrate = hl2ss_lnm.get_video_codec_bitrate(self._width, self._height, self._framerate, self._divisor, factor)
         self._count = self._framerate*buffer_size
         self._format, self._channels = camera.FORMATS[format_index]
 
-        hl2ss.start_subsystem_pv(self._host, hl2ss.StreamPort.PERSONAL_VIDEO)
+        hl2ss_lnm.start_subsystem_pv(self._host, hl2ss.StreamPort.PERSONAL_VIDEO)
 
-        ipc_rc = hl2ss.ipc_rc(self._host, hl2ss.IPCPort.REMOTE_CONFIGURATION)
+        ipc_rc = hl2ss_lnm.ipc_rc(self._host, hl2ss.IPCPort.REMOTE_CONFIGURATION)
         ipc_rc.open()
-        ipc_rc.wait_for_pv_subsystem(True)
-        ipc_rc.set_pv_video_temporal_denoising(hl2ss.PV_VideoTemporalDenoisingMode.Off)
-        ipc_rc.set_pv_focus(hl2ss.PV_FocusMode.Manual, hl2ss.PV_AutoFocusRange.Normal, hl2ss.PV_ManualFocusDistance.Infinity, focus, hl2ss.PV_DriverFallback.Disable)
+        ipc_rc.pv_wait_for_subsystem(True)
+        ipc_rc.pv_set_video_temporal_denoising(hl2ss.PV_VideoTemporalDenoisingMode.Off)
+        ipc_rc.pv_set_focus(hl2ss.PV_FocusMode.Manual, hl2ss.PV_AutoFocusRange.Normal, hl2ss.PV_ManualFocusDistance.Infinity, focus, hl2ss.PV_DriverFallback.Disable)
         ipc_rc.close()
 
         producer = hl2ss_mp.producer()
-        producer.configure_pv(True, self._host, hl2ss.StreamPort.PERSONAL_VIDEO, hl2ss.ChunkSize.PERSONAL_VIDEO, hl2ss.StreamMode.MODE_1, self._width, self._height, self._framerate, self._profile, self._bitrate, self._format)
+        producer.configure(hl2ss.StreamPort.PERSONAL_VIDEO, hl2ss_lnm.rx_pv(self._host, hl2ss.StreamPort.PERSONAL_VIDEO, width=self._width, height=self._height, framerate=self._framerate, divisor=self._divisor, profile=self._profile, bitrate=self._bitrate, decoded_format=self._format))
         producer.initialize(hl2ss.StreamPort.PERSONAL_VIDEO, self._count)
         producer.start(hl2ss.StreamPort.PERSONAL_VIDEO)
 
@@ -108,7 +110,7 @@ class camera:
     def release(self):
         self._sink.detach()
         self._producer.stop(hl2ss.StreamPort.PERSONAL_VIDEO)
-        hl2ss.stop_subsystem_pv(self._host, hl2ss.StreamPort.PERSONAL_VIDEO)
+        hl2ss_lnm.stop_subsystem_pv(self._host, hl2ss.StreamPort.PERSONAL_VIDEO)
 
 
 #------------------------------------------------------------------------------
@@ -171,7 +173,7 @@ class ipc_command_buffer(hl2ss.umq_command_buffer):
 class ipc_umq:
     def __init__(self, host, drain_rate=256):
         self._drain_rate = drain_rate
-        self._ipc_umq = hl2ss.ipc_umq(host, hl2ss.IPCPort.UNITY_MESSAGE_QUEUE)        
+        self._ipc_umq = hl2ss_lnm.ipc_umq(host, hl2ss.IPCPort.UNITY_MESSAGE_QUEUE)        
         self._pushes = 0
 
     def open(self):
@@ -232,13 +234,11 @@ class ipc_umq:
 class ipc_vi:
     def __init__(self, host, commands):
         self._commands = commands
-        self._ipc_vi = hl2ss.ipc_vi(host, hl2ss.IPCPort.VOICE_INPUT)
+        self._ipc_vi = hl2ss_lnm.ipc_vi(host, hl2ss.IPCPort.VOICE_INPUT)
 
     def open(self):
         self._ipc_vi.open()
-        self._ipc_vi.create_recognizer()
-        self._ipc_vi.register_commands(True, self._commands)
-        self._ipc_vi.start()
+        self._ipc_vi.start(self._commands)
 
     def pull(self, confidence=hl2ss.VI_SpeechRecognitionConfidence.Medium):
         events = self._ipc_vi.pop()
@@ -248,6 +248,5 @@ class ipc_vi:
 
     def close(self):
         self._ipc_vi.stop()
-        self._ipc_vi.clear()
         self._ipc_vi.close()
 
